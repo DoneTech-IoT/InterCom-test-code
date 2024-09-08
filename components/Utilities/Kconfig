@@ -1,0 +1,16 @@
+menu "Done General"    
+    menu "Done Buzzer"    
+        config DONE_GPIO_BUZZER
+            int "GPIO for Buzzer" 
+            default 1   
+        config DONE_BUZZER_DEFAULT_FREQUENCY
+            int "Buzzer default Frequency" 
+            default 400           
+        config DONE_BUZZER_DEFAULT_PWM_DURATION
+            int "Buzzer default PWM Duration" 
+            default 200               
+        config DONE_BUZZER_DEFAULT_DELAY_MS
+            int "Buzzer default delay(ms)" 
+            default 300                   
+    endmenu         
+endmenu     

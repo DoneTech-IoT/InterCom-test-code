@@ -1,0 +1,46 @@
+menu "Done Matter Config"    
+    depends on DONE_COMPONENT_MATTER
+
+    choice DONE_MATTER_DEVICE
+        prompt "Select your DONE's Matter device"
+        default DONE_MATTER_DEVICE_COFFEE_MAKER
+            
+        config DONE_MATTER_DEVICE_COFFEE_MAKER
+            bool "Smart Coffee Maker"                  
+
+        config DONE_MATTER_DEVICE_REFRIGERATOR
+            bool "Smart Refrigerator"          
+    endchoice             
+        
+    menu " Device Pin Assignments" 
+    depends on DONE_MATTER_DEVICE_COFFEE_MAKER
+
+        config DONE_KEY_ACTIVE_LEVEL
+            int "Key activation level" 
+            default 1       
+
+        config DONE_COFFEE_MAKER_POWER_KEY
+            int "Master Power Key"
+            default 1
+
+        config DONE_COFFEE_MAKER_MICRO_SWITCH
+            int "Door Micro Switch"
+            default 1
+
+        config DONE_COFFEE_MAKER_COOKING_MODE_GRINDER
+            int "Cooking-Mode Grinder Key"
+            default 2    
+        
+        config DONE_COFFEE_MAKER_COOKING_MODE_COFFEE
+            int "Cooking-Mode Coffee Key"
+            default 3
+            
+        config DONE_COFFEE_MAKER_COOKING_MODE_TEA
+            int "Cooking-Mode Tea Key"
+            default 4        
+        
+        config DONE_COFFEE_MAKER_CUP_COUNTER_KEY
+            int "Cup Counter Key"
+            default 5
+    endmenu
+endmenu
