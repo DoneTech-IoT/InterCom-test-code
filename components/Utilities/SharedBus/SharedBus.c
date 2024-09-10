@@ -13,19 +13,17 @@ static const char *TAG = "SharedBus";
 
 static EventBits_t EventBits;
 static EventGroupHandle_t EventGroupHandleLocal;
+QueueHandle_t QueueHandle;
 
-esp_err_t SharedBusInit(EventGroupHandle_t *EventGroupHandle,QueueHandle_t *QueueHandle)    
+esp_err_t SharedBusInit()    
 {
     EventBits = 0;
-    EventGroupHandleLocal = *EventGroupHandle;
     EventGroupHandleLocal = xEventGroupCreate();  
-    *QueueHandle = xQueueCreate(1, sizeof(SharedBusPacket_t));     
+    QueueHandle = xQueueCreate(1, sizeof(SharedBusPacket_t));     
     return 0;         
 }
 
-esp_err_t SharedBusSend(        
-    QueueHandle_t QueueHandle,
-    SharedBusPacket_t SharedBusPacket)    
+esp_err_t SharedBusSend(SharedBusPacket_t SharedBusPacket)    
 {    
     EventBits = xEventGroupWaitBits(
                     EventGroupHandleLocal,   /* The event group being tested. */
@@ -55,8 +53,7 @@ esp_err_t SharedBusSend(
     return false;    
 }
 
-esp_err_t SharedBusRecieve(    
-    QueueHandle_t QueueHandle, 
+esp_err_t SharedBusRecieve(
     SharedBusPacket_t SharedBusPacket,
     TaskInterfaceID_t interfaceID)
 {   

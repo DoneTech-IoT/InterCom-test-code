@@ -4,9 +4,6 @@
 #include"string.h"
 #include "SharedBus.h"
 
-QueueHandle_t SharedQueueHandle;
-EventGroupHandle_t EventGroupHandle;
-
 static const char *TAG = "Service_Manger";
 #define TASK_LIST_BUFFER_SIZE 512
 // #define MONITORING
@@ -94,9 +91,10 @@ void ServiceMangerTaskInit()
  */
 void ServiceMangerInit()
 {
-    if (SharedBusInit(&EventGroupHandle, &SharedQueueHandle))
+    if (SharedBusInit())
         ESP_LOGE(TAG, "Failed to Initialize SharedBus.");
     ESP_LOGI(TAG, "Initialize SharedBus.");
+
 #ifdef CONFIG_DONE_COMPONENT_LVGL
     GUI_TaskCreator();
     ESP_LOGI(TAG, "GUI Created !");

@@ -6,7 +6,7 @@ idf_component_register(
 "JsonUtility/JsonUtility.c"
 "Log/Custom_Log.c"
 "Buzzer/Buzzer.c"
-"SharedBus/SharedBus.cpp"
+"SharedBus/SharedBus.c"
  INCLUDE_DIRS 
 
 "JsonUtility/include"

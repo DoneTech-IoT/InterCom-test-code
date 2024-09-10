@@ -1,6 +1,11 @@
 #ifndef SHARED_BUS_H
 #define SHARED_BUS_H
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 #include <freertos/FreeRTOS.h>
 #include <freertos/queue.h>
 #include <freertos/task.h>
@@ -25,14 +30,16 @@ typedef struct {
     void *data;
 } SharedBusPacket_t;
 
-esp_err_t SharedBusInit(EventGroupHandle_t *EventGroupHandle,QueueHandle_t *QueueHandle);
+esp_err_t SharedBusInit();
 
-esp_err_t SharedBusSend(    
-    QueueHandle_t QueueHandle, SharedBusPacket_t SharedBusPacket);
+esp_err_t SharedBusSend(SharedBusPacket_t SharedBusPacket);
 
-esp_err_t SharedBusRecieve(    
-    QueueHandle_t QueueHandle, 
+esp_err_t SharedBusRecieve(
     SharedBusPacket_t SharedBusPacket, 
     TaskInterfaceID_t interfaceID);    
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //SHARED_BUS_H
