@@ -18,6 +18,7 @@
 
 #include <app/server/CommissioningWindowManager.h>
 #include <app/server/Server.h>
+
 using namespace esp_matter;
 using namespace esp_matter::attribute;
 using namespace esp_matter::endpoint;
@@ -43,6 +44,25 @@ typedef struct {
     UpdateGUI_AddMatterIconPtr ConnectToMatterNetwork;
 } MatterInterfaceHandler_t;
 
-bool Matter_TaskInit(MatterInterfaceHandler_t *MatterInterfaceHandler);
+/**
+ * @brief Initializes and creates the Matter task.
+ * create all matter core components and MatterInterface Task.
+ * @param MatterHandle Pointer to the task handle for the created task.
+ * @param TaskPriority Priority of the task.
+ * @param TaskStack Stack size for the task.
+ * @return error if exists
+ */
+esp_err_t Matter_TaskInit(
+    MatterInterfaceHandler_t *MatterInterfaceHandler,
+    TaskHandle_t *MatterHandle, UBaseType_t TaskPriority, 
+    uint32_t TaskStack);
 
+/**
+ * @brief Deletes the Matter task and frees associated resources.
+ * This function deletes the specified Matter task and releases the memory allocated for
+ * the task stack and control block.
+ * @param TaskHandler Pointer to the task handle to be deleted.
+ * @return void
+ */
+void Matter_TaskKill(TaskHandle_t *TaskHandler);
 #endif //MATTER_INTERFACE_H

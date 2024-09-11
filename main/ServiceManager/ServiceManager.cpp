@@ -1,6 +1,5 @@
 #include "ServiceManager.h"
 #include "CoffeeMakerApp.hpp"
-#include "SharedBus.h"
 
 static const char *TAG = "Service_Manager";
 
@@ -8,6 +7,8 @@ static const char *TAG = "Service_Manager";
 QueueHandle_t MatterBufQueue;
 SemaphoreHandle_t MatterSemaphore = NULL;
 MatterInterfaceHandler_t MatterInterfaceHandler;
+TaskHandle_t MatterHandle = NULL;
+UBaseType_t MatterPriority = tskIDLE_PRIORITY + 1;
 #endif
 
 #ifdef CONFIG_DONE_COMPONENT_MQTT
@@ -57,7 +58,10 @@ void MatterServiceRunner()
     MatterInterfaceHandler.SharedSemaphore = &MatterSemaphore;
     MatterInterfaceHandler.MatterAttributeUpdateCB = MatterAttributeUpdateCBMain;
     MatterInterfaceHandler.ConnectToMatterNetwork = MatterNetworkConnected;
-    Matter_TaskInit(&MatterInterfaceHandler);
+    Matter_TaskInit(&MatterInterfaceHandler, 
+                    &MatterHandle,
+                    MatterPriority,
+                    MATTER_STACK_SIZE);
 }
 #endif
 #ifdef CONFIG_DONE_COMPONENT_LVGL
@@ -129,10 +133,6 @@ void ServiceMangerTaskInit()
  */
 void ServiceMangerInit()
 {
-    if (SharedBusInit())
-        ESP_LOGE(TAG, "Failed to Initialize SharedBus.");
-    ESP_LOGI(TAG, "Initialize SharedBus.");
-
     nvsFlashInit();
 #ifdef CONFIG_DONE_COMPONENT_LVGL
     GUI_TaskCreator();

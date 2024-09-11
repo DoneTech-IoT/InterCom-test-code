@@ -15,9 +15,7 @@ static const char *TAG = "MatterInterface";
 static MatterInterfaceHandler_t *InterfaceHandler;
 StaticTask_t *MatterTaskBuffer;
 StackType_t *MatterStack;
-TaskHandle_t MatterHandle = NULL;
-#define MATTER_STACK_SIZE 1024 * 4
-void MatterTask(void *pvParameter);
+static void MatterTask(void *pvParameter);
 // ****************************** Local Functions
 using namespace esp_matter;
 using namespace esp_matter::attribute;
@@ -135,7 +133,8 @@ static esp_err_t app_identification_cb(
  * @return ESP_OK on success.
  * @return error in case of failure.
  */
-static esp_err_t app_attribute_update_cb(callback_type_t type, 
+static esp_err_t app_attribute_update_cb(
+    callback_type_t type, 
     uint16_t endpoint_id, uint32_t cluster_id,                                         
     uint32_t attribute_id, esp_matter_attr_val_t *val, void *priv_data)
 {
@@ -161,26 +160,30 @@ static esp_err_t app_attribute_update_cb(callback_type_t type,
     return err;  
 }
 
-/** 
- * @brief this API call from app_main to create main task of Matter
- * @param[in] MatterInterfaceHandler Matter task handler
- * @return ESP_OK on success.
- * @return error in case of failure.
+/**
+ * @brief Initializes and creates the Matter task.
+ * create all matter core components and MatterInterface Task.
+ * @param MatterHandle Pointer to the task handle for the created task.
+ * @param TaskPriority Priority of the task.
+ * @param TaskStack Stack size for the task.
+ * @return error if exists
  */
-bool Matter_TaskInit(MatterInterfaceHandler_t *MatterInterfaceHandler)
-{
+esp_err_t Matter_TaskInit(
+    MatterInterfaceHandler_t *MatterInterfaceHandler,
+    TaskHandle_t *MatterHandle, 
+    UBaseType_t TaskPriority, 
+    uint32_t TaskStack)
+{    
+    esp_err_t err = ESP_OK;        
     InterfaceHandler = MatterInterfaceHandler;
 
-    if (InterfaceHandler->SharedBufQueue != NULL &&
-        InterfaceHandler->SharedSemaphore != NULL &&
-        // InterfaceHandler->MatterNetworkEventCB != NULL &&
-        // InterfaceHandler->MatterIdentificationCB != NULL &&
-        InterfaceHandler->MatterAttributeUpdateCB != NULL)
-    {
+    if (MatterHandle != NULL && TaskPriority != NULL && TaskStack !=0 &&
+        MatterInterfaceHandler != NULL)                
+    {        
         //*(InterfaceHandler->SharedBufQueue) = xQueueCreate(1, sizeof(KeyStatePair_t));        
         *(InterfaceHandler->SharedBufQueue) = xQueueCreate(1, sizeof(CoffeeMakerMatter_str));
         Log_RamStatus("Matter", "Start Matter");
-        esp_err_t err = ESP_OK;        
+        
         
         /* Create a Matter node and add the mandatory Root Node device type on endpoint 0 */
         Log_RamOccupy("Matter", "making node");
@@ -226,11 +229,11 @@ bool Matter_TaskInit(MatterInterfaceHandler_t *MatterInterfaceHandler)
         ESP_LOGI(TAG, "Matter app initiated successfully");        
 
         MatterTaskBuffer = (StaticTask_t *)malloc(sizeof(StaticTask_t));
-        MatterStack = (StackType_t *)malloc(MATTER_STACK_SIZE * sizeof(StackType_t));
-        MatterHandle = xTaskCreateStatic(
+        MatterStack = (StackType_t *)malloc(TaskStack * sizeof(StackType_t));
+        *MatterHandle = xTaskCreateStatic(
                             MatterTask,       /* Function that implements the task. */
                             "MatterTask",          /* Text name for the task. */
-                            MATTER_STACK_SIZE,      /* Number of indexes in the xStack array. */
+                            TaskStack,      /* Number of indexes in the xStack array. */
                             NULL,    /* Parameter passed into the task. */
                             tskIDLE_PRIORITY + 1,/* Priority at which the task is created. */
                             MatterStack,          /* Array to use as the task's stack. */
@@ -240,14 +243,38 @@ bool Matter_TaskInit(MatterInterfaceHandler_t *MatterInterfaceHandler)
     {
         ESP_LOGW(TAG, "Matter is already initiated");
     }
-    return ESP_OK;
+    return err;
 }
 
-void MatterTask(void *pvParameter)
+/**
+ * @brief Main task function for MatterInterface task
+ * @param pvParameter Parameters passed to the task (currently unused).
+ * @return void
+ */
+static void MatterTask(void *pvParameter)
 {
     while (true)
     {
 
         vTaskDelay(pdMS_TO_TICKS(1));
     }
+}
+
+/**
+ * @brief Deletes the Matter task and frees associated resources.
+ * This function deletes the specified Matter task and releases the memory allocated for
+ * the task stack and control block.
+ * @param TaskHandler Pointer to the task handle to be deleted.
+ * @return void
+ */
+void Matter_TaskKill(TaskHandle_t *TaskHandler)
+{
+    if (TaskHandler == NULL)
+    {
+        ESP_LOGE(TAG, "Matter task does not delete");
+        return;
+    }
+    vTaskDelete(*TaskHandler);
+    free(MatterTaskBuffer);
+    free(MatterStack);
 }
