@@ -7,6 +7,6 @@
   - Use the SharedBusSend function to send the packet on the SharedBus    
   - Use the SharedBusRecieve function to Receive the packet    
 
-  #### interfaceID in SharedBusRecieve is the ID of the receiver component. You can find the right ID in the SharedBus.h file.
-  #### Do not forget to handle unexpected ERRORs while using send and receive functions.
+  #### - interfaceID in SharedBusRecieve is the ID of the receiver component. You can find the right ID in the SharedBus.h file.
+  #### - Do not forget to handle unexpected ERRORs while using send and receive functions.
   
