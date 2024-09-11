@@ -68,8 +68,8 @@ esp_err_t SharedBusRecieve(
     if((EventBits & BIT_22)) //default state
     {           
         ret = true;    
-        if(xQueuePeek(QueueHandle, &SharedBusPacket, 1) == pdTRUE) //TODO err-handling   
-            //ESP_LOGE(TAG, "Peek-%d", SharedBusPacket.SourceID);
+        if(xQueuePeek(QueueHandle, &SharedBusPacket, 1) != pdTRUE)
+            ESP_LOGE(TAG, "Failed to peek data from queue.");  
 
         if (SharedBusPacket.SourceID == interfaceID)
         {
@@ -81,9 +81,7 @@ esp_err_t SharedBusRecieve(
 
                 EventBits = xEventGroupClearBits(
                             EventGroupHandleLocal, /* The event group being updated. */
-                            BIT_23);   
-
-                ESP_LOGE(TAG, "-------------------------------");                
+                            BIT_23);              
             }
             else
             {
@@ -94,6 +92,6 @@ esp_err_t SharedBusRecieve(
             }
             ret = false;    
         }            
-    }        
+    }     
     return ret;
 }
