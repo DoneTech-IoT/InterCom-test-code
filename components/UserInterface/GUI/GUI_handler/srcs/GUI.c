@@ -1,6 +1,7 @@
 #include"GUI.h"
 #include "gui_guider.h"
 #include "Custom_Log.h"
+#include "SharedBus.h"
 
 static const char *TAG = "GUI";
 
@@ -20,6 +21,9 @@ lv_color_t *LVGL_BigBuf2;
  */
 void GUI_MainTask(void *pvParameter)
 {
+    SharedBusPacket_t recievePacket;
+    char *msg = "HI every one. I'm blackboard.";
+
     Log_RamOccupy("LVGL", "starting GUI task");
     lv_disp_draw_buf_t disp_draw_buf;
     lv_init();
@@ -38,6 +42,12 @@ void GUI_MainTask(void *pvParameter)
 
     while (true)
     {
+        recievePacket.SourceID = UI_INTERFACE_ID;
+        recievePacket.PacketID = 1;
+        recievePacket.data = msg;
+        SharedBusSend(recievePacket);
+        ESP_LOGE(TAG, "test sharedBusSend");
+
         vTaskDelay(pdMS_TO_TICKS(50));
         lv_task_handler();
     }
