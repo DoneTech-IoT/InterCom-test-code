@@ -1,7 +1,6 @@
 #include"GUI.h"
 #include "gui_guider.h"
 #include "Custom_Log.h"
-#include "SharedBus.h"
 
 static const char *TAG = "GUI";
 
@@ -36,19 +35,10 @@ void GUI_MainTask(void *pvParameter)
     setup_ui(&guider_ui);
     LVGL_Timer();
     Log_RamOccupy("LVGL", "starting GUI task");
-    SharedBusPacket_t recievePacket;
-    char *msg = "HI every one. I'm blackboard.";
+
     while (true)
     {
-        
-       // ESP_LOGE("LVGL", "starting GUI task111");
-        recievePacket.SourceID = UI_INTERFACE_ID;
-        recievePacket.PacketID = 1;
-        recievePacket.data = msg;
-        SharedBusSend(recievePacket);
-        //ESP_LOGE("LVGL", "starting GUI task2222");
-        
-        vTaskDelay(pdMS_TO_TICKS(5000));
+        vTaskDelay(pdMS_TO_TICKS(50));
         lv_task_handler();
     }
 }

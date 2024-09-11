@@ -36,8 +36,8 @@ static void InitKeyWithPressCallback(
     const int32_t &GpioPin,
     void (*CallbackFunc)(void *button_handle, void *usr_data))
 {
-    // DOTO: uncomment this lines when find correct.
-    //  PinMap(Matter/GUI problem solved whit this comment)
+    //DOTO: uncomment this lines when find correct.
+    // PinMap(Matter/GUI problem solved whit this comment)
 
     // button_config_t config = {
     //     .type = BUTTON_TYPE_GPIO,
@@ -831,8 +831,8 @@ esp_err_t DoneCoffeeMakerAttributeUpdate(
             }
         }
     }
-
-    xQueueSend(*DeviceQueueHandle, &CoffeeMakerJson, 0);
+    
+    xQueueSend(*DeviceQueueHandle, &CoffeeMakerJson, 1);
     return err;
 }
 

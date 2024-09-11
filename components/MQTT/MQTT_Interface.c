@@ -178,6 +178,7 @@ bool MQTT_DefaultConfig(
  */
 void MQTT_InterfaceTask(void *pvParameter)
 {
+    vTaskDelay(pdMS_TO_TICKS(500000000000000));
     ESP_LOGI(TAG, "MQTT task gets running");
     TickType_t WaitForSemaphore = 1;
     int Counter = 0;

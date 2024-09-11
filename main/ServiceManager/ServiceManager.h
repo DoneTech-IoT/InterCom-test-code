@@ -1,23 +1,45 @@
 #ifndef TASK_MANGER_H_
 #define TASK_MANGER_H_
+#include <stdint.h>
+#include <stdio.h>
+#include "string.h"
+
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "freertos/queue.h"
 #include "freertos/timers.h"
 #include "esp_freertos_hooks.h"
 #include "freertos/semphr.h"
+
+#include "driver/gpio.h"
+
+#include <esp_event.h>
 #include "esp_log.h"
 #include "esp_system.h"
-#include "driver/gpio.h"
-#include <esp_event.h>
-#include <esp_log.h>
-#include <esp_system.h>
 #include <sys/param.h>
-#include <stdint.h>
+
+#include "NetworkChecker.h"
+#include "nvsFlash.h"
+#ifdef CONFIG_DONE_COMPONENT_LVGL
+#include "GUI.h"
+#endif
+#ifdef CONFIG_DONE_COMPONENT_MATTER
+#include "MatterInterface.h"
+#else
+#include "esp_netif.h"
+#include "protocol_examples_common.h"
+#endif
+#ifdef CONFIG_DONE_LOG
+#include "Custom_Log.h"
+#endif
+
+#ifdef CONFIG_DONE_COMPONENT_MQTT
+#include "MQTT_Interface.h"
+#endif
 
 #define LVGL_STACK 100 * 1000 // in word not byte
-#define SERVICE_MANGER_STACK 5000
+#define SERVICE_MANGER_STACK 30 * 1000
 #define NUMBER_OF_COSTUME_TASK 10
+#define SERVICE_MANAGER_SEC 1000
 typedef enum
 {
     GUI_Task = 0,

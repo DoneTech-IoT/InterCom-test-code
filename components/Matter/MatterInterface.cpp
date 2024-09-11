@@ -9,7 +9,6 @@
 #include "DoneMatterEndpoint.h"
 #include "DoneCoffeeMaker.h"
 #include "Custom_Log.h"
-#include "SharedBus.h"
 
 // ****************************** Local Variables
 static const char *TAG = "MatterInterface";
@@ -225,7 +224,7 @@ bool Matter_TaskInit(MatterInterfaceHandler_t *MatterInterfaceHandler)
 #endif
 
         ESP_LOGI(TAG, "Matter app initiated successfully");        
-ESP_LOGE(TAG, "test2");
+
         MatterTaskBuffer = (StaticTask_t *)malloc(sizeof(StaticTask_t));
         MatterStack = (StackType_t *)malloc(MATTER_STACK_SIZE * sizeof(StackType_t));
         MatterHandle = xTaskCreateStatic(
@@ -246,15 +245,9 @@ ESP_LOGE(TAG, "test2");
 
 void MatterTask(void *pvParameter)
 {
-    ESP_LOGE(TAG, "test1");
-    SharedBusPacket_t recievedPacket;
     while (true)
     {
-        ESP_LOGE(TAG, "Packet recieved test");
-        if(SharedBusRecieve(recievedPacket, MATTER_INTERFACE_ID))
-            ESP_LOGE(TAG, "Packet recieved: %s", (char*) recievedPacket.data);
-        else
-            ESP_LOGE(TAG, "Failed to recieve.");
+
         vTaskDelay(pdMS_TO_TICKS(1));
     }
 }

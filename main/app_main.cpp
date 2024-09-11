@@ -1,6 +1,6 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "ServiceManger.h"
+#include "ServiceManager.h"
 #include "Custom_Log.h"
 
 static const char *TAG = "Main";

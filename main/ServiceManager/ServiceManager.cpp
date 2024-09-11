@@ -1,10 +1,20 @@
-#include "ServiceManger.h"
-#include"GUI.h"
-#include <stdio.h>
-#include"string.h"
-#include "SharedBus.h"
+#include "ServiceManager.h"
+#include "CoffeeMakerApp.hpp"
 
-static const char *TAG = "Service_Manger";
+static const char *TAG = "Service_Manager";
+
+#ifdef CONFIG_DONE_COMPONENT_MATTER
+QueueHandle_t MatterBufQueue;
+SemaphoreHandle_t MatterSemaphore = NULL;
+MatterInterfaceHandler_t MatterInterfaceHandler;
+#endif
+
+#ifdef CONFIG_DONE_COMPONENT_MQTT
+static QueueHandle_t MQTTDataFromBrokerQueue;
+static SemaphoreHandle_t MQTTConnectedSemaphore;
+static SemaphoreHandle_t MQTTErrorOrDisconnectSemaphore;
+#endif
+
 #define TASK_LIST_BUFFER_SIZE 512
 // #define MONITORING
 /**
@@ -22,6 +32,33 @@ StackType_t *xServiceMangerStack;
 // Global instance of Service Manager
 ServiceManger_t ServiceManger;
 
+#ifdef CONFIG_DONE_COMPONENT_MATTER
+void MatterAttributeUpdateCBMain(callback_type_t type,
+                                 uint16_t endpoint_id, uint32_t cluster_id,
+                                 uint32_t attribute_id, esp_matter_attr_val_t *val,
+                                 void *priv_data)
+{
+    printf("callback_type_t: %u\n", type);
+    printf("endpoint_id: %u\n", endpoint_id);
+    printf("cluster_id: %lu\n", cluster_id);
+    printf("attribute_id: %lu\n", attribute_id);
+    printf("val: %p\n", val);
+    printf("priv_data: %pGlobalInitGlobalInitGlobalInit\n", priv_data);
+}
+
+void MatterNetworkConnected()
+{
+    ESP_LOGI(TAG, "Matter Network Connected\n");
+}
+void MatterServiceRunner()
+{
+    MatterInterfaceHandler.SharedBufQueue = &MatterBufQueue;
+    MatterInterfaceHandler.SharedSemaphore = &MatterSemaphore;
+    MatterInterfaceHandler.MatterAttributeUpdateCB = MatterAttributeUpdateCBMain;
+    MatterInterfaceHandler.ConnectToMatterNetwork = MatterNetworkConnected;
+    Matter_TaskInit(&MatterInterfaceHandler);
+}
+#endif
 #ifdef CONFIG_DONE_COMPONENT_LVGL
 /**
  * @brief Creates the GUI task.
@@ -91,17 +128,27 @@ void ServiceMangerTaskInit()
  */
 void ServiceMangerInit()
 {
-    if (SharedBusInit())
-        ESP_LOGE(TAG, "Failed to Initialize SharedBus.");
-    ESP_LOGI(TAG, "Initialize SharedBus.");
-
+    nvsFlashInit();
 #ifdef CONFIG_DONE_COMPONENT_LVGL
     GUI_TaskCreator();
     ESP_LOGI(TAG, "GUI Created !");
+    vTaskDelay(SERVICE_MANAGER_SEC * 4);
 #endif
 #ifdef CONFIG_DONE_COMPONENT_SPOTIFY
     SpotifyTaskCreator();
     ESP_LOGI(TAG, "Spotify Created !");
+#endif
+#ifdef CONFIG_DONE_COMPONENT_MATTER
+    MatterServiceRunner();
+    ESP_LOGI(TAG, "Matter interface called !");
+#else
+    ESP_LOGE(TAG, "connect to wifi");
+    ESP_ERROR_CHECK(esp_netif_init());
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+    ESP_ERROR_CHECK(example_connect());
+#endif
+#ifdef CONFIG_DONE_COMPONENT_MQTT_DEFAULT
+    MQTT_DefaultConfig(&MQTTDataFromBrokerQueue, &MQTTConnectedSemaphore, &MQTTErrorOrDisconnectSemaphore);
 #endif
 }
 
@@ -114,12 +161,13 @@ void ServiceMangerInit()
 void ServiceMangerTask(void *pvParameter)
 {
     ServiceMangerInit();
-    //char pcTaskList[TASK_LIST_BUFFER_SIZE];
+    CoffeeMakerApplication(&MQTTDataFromBrokerQueue, &MQTTConnectedSemaphore, &MQTTErrorOrDisconnectSemaphore);
+    char pcTaskList[TASK_LIST_BUFFER_SIZE];
     while (true)
     {
-        // vTaskList(pcTaskList);
 #ifdef MONITORING
-        // ESP_LOGI(TAG, "Task List:\n%s\n", pcTaskList);
+// vTaskList(pcTaskList);
+// ESP_LOGI(TAG, "Task List:\n%s\n", pcTaskList);
 #endif
         vTaskDelay(pdMS_TO_TICKS(500));
     }

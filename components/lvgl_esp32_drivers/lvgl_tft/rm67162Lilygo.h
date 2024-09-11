@@ -23,7 +23,7 @@ extern "C" {
 
 #define SPI_FREQUENCY         80000000
 #define TFT_SPI_MODE          0
-//#define TFT_SPI_HOST          SPI2_HOST
+#define TFT_SPI_HOST          SPI2_HOST
 
 #define EXAMPLE_LCD_H_RES     536
 #define EXAMPLE_LCD_V_RES     240
