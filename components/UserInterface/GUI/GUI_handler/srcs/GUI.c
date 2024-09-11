@@ -40,13 +40,14 @@ void GUI_MainTask(void *pvParameter)
     LVGL_Timer();
     Log_RamOccupy("LVGL", "starting GUI task");
 
+    recievePacket.SourceID = UI_INTERFACE_ID;
+    recievePacket.PacketID = 1;
+    recievePacket.data = msg;
+
     while (true)
     {
-        recievePacket.SourceID = UI_INTERFACE_ID;
-        recievePacket.PacketID = 1;
-        recievePacket.data = msg;
         SharedBusSend(recievePacket);
-        ESP_LOGE(TAG, "test sharedBusSend");
+      //  ESP_LOGE(TAG, "test sharedBusSend");
 
         vTaskDelay(pdMS_TO_TICKS(50));
         lv_task_handler();

@@ -1,5 +1,6 @@
 #include "ServiceManager.h"
 #include "CoffeeMakerApp.hpp"
+#include "SharedBus.h"
 
 static const char *TAG = "Service_Manager";
 
@@ -133,6 +134,10 @@ void ServiceMangerTaskInit()
  */
 void ServiceMangerInit()
 {
+    if (SharedBusInit())
+        ESP_LOGE(TAG, "Failed to Initialize SharedBus.");
+    ESP_LOGI(TAG, "Initialize SharedBus.");
+
     nvsFlashInit();
 #ifdef CONFIG_DONE_COMPONENT_LVGL
     GUI_TaskCreator();
