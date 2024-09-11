@@ -7,6 +7,7 @@ idf_component_register(
 "Log/Custom_Log.c"
 "Buzzer/Buzzer.c"
 "NetworkChecker/NetworkChecker.c"
+"SharedBus/SharedBus.c"
  INCLUDE_DIRS 
 
 "JsonUtility/include"
@@ -14,4 +15,5 @@ idf_component_register(
 "nvsFlash/include"
 "Buzzer"
 "NetworkChecker"
+"SharedBus"
      REQUIRES spiffs nvs_flash esp_timer esp_event nvs_flash driver json esp_http_client esp_wifi) 
