@@ -40,7 +40,7 @@
 #define SERVICE_MANGER_STACK 30 * 1000
 #define NUMBER_OF_COSTUME_TASK 10
 #define SERVICE_MANAGER_SEC 1000
-#define MATTER_STACK_SIZE 1024 * 4
+#define MATTER_STACK_SIZE 1024 * 8
 typedef enum
 {
     GUI_Task = 0,
