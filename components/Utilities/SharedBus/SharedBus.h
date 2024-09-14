@@ -27,7 +27,7 @@ typedef enum {
 typedef struct {
     uint8_t SourceID;
     uint8_t PacketID;    
-    void *data;
+    char data[1024];
 } SharedBusPacket_t;
 
 esp_err_t SharedBusInit();
@@ -35,7 +35,7 @@ esp_err_t SharedBusInit();
 esp_err_t SharedBusSend(SharedBusPacket_t SharedBusPacket);
 
 esp_err_t SharedBusRecieve(
-    SharedBusPacket_t SharedBusPacket, 
+    SharedBusPacket_t *SharedBusPacket, 
     TaskInterfaceID_t interfaceID);    
 
 #ifdef __cplusplus

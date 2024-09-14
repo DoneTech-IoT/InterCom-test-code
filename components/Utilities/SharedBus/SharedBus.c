@@ -54,7 +54,7 @@ esp_err_t SharedBusSend(SharedBusPacket_t SharedBusPacket)
 }
 
 esp_err_t SharedBusRecieve(
-    SharedBusPacket_t SharedBusPacket,
+    SharedBusPacket_t *SharedBusPacket,
     TaskInterfaceID_t interfaceID)
 {   
     esp_err_t ret = false;
@@ -68,30 +68,30 @@ esp_err_t SharedBusRecieve(
     if((EventBits & BIT_22)) //default state
     {           
         ret = true;    
-        if(xQueuePeek(QueueHandle, &SharedBusPacket, 1) != pdTRUE)
-            ESP_LOGE(TAG, "Failed to peek data from queue.");  
-
-        if (SharedBusPacket.SourceID == interfaceID)
+        if(xQueuePeek(QueueHandle, SharedBusPacket, 1) == pdTRUE)
         {
-            if((EventBits & BIT_21))
+            if (SharedBusPacket->SourceID == interfaceID)
             {
-                EventBits = xEventGroupClearBits(
-                            EventGroupHandleLocal, /* The event group being updated. */
-                            BIT_22);  
-
-                EventBits = xEventGroupClearBits(
-                            EventGroupHandleLocal, /* The event group being updated. */
-                            BIT_23);              
-            }
-            else
-            {
-                //permission to itself
-                EventBits = xEventGroupSetBits(
+                if((EventBits & BIT_21))
+                {
+                    EventBits = xEventGroupClearBits(
                                 EventGroupHandleLocal, /* The event group being updated. */
-                                BIT_21);       
-            }
-            ret = false;    
-        }            
-    }     
+                                BIT_22);  
+
+                    EventBits = xEventGroupClearBits(
+                                EventGroupHandleLocal, /* The event group being updated. */
+                                BIT_23);              
+                }
+                else
+                {
+                    //permission to itself
+                    EventBits = xEventGroupSetBits(
+                                    EventGroupHandleLocal, /* The event group being updated. */
+                                    BIT_21);       
+                }
+                ret = false;    
+            }  
+        }          
+    }         
     return ret;
 }
