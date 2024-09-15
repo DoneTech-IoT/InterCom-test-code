@@ -16,18 +16,12 @@ typedef enum {
     MATTER_INTERFACE_ID = 2,
     MQTT_INTERFACE_ID = 3,  
     LOG_INTERFACE_ID = 4,
-    LOG_INTERFACE_PlusOne,
-    LOG_INTERFACE_PlusTwo,
-    LOG_INTERFACE_PlusTree,
-    LOG_INTERFACE_PlusFour,
-    LOG_INTERFACE_PlusFive,
-    LOG_INTERFACE_PlusSix,
 } TaskInterfaceID_t;
 
 typedef struct {
     uint8_t SourceID;
     uint8_t PacketID;    
-    char data[1024];
+    void *data;
 } SharedBusPacket_t;
 
 esp_err_t SharedBusInit();

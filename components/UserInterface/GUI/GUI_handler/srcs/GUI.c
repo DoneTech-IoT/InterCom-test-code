@@ -42,13 +42,13 @@ void GUI_MainTask(void *pvParameter)
 
     recievePacket.SourceID = UI_INTERFACE_ID;
     recievePacket.PacketID = 1;
-    strcpy(recievePacket.data, msg);
+    recievePacket.data = msg;
 
     while (true)
     {
         SharedBusSend(recievePacket);
         if(SharedBusRecieve(&recievePacket, UI_INTERFACE_ID))
-             ESP_LOGE(TAG, "Packet recieved: %s", recievePacket.data);
+             ESP_LOGE(TAG, "Packet recieved: %s", (char *)recievePacket.data);
 
         lv_task_handler();
     }

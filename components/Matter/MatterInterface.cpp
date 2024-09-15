@@ -258,7 +258,7 @@ static void MatterTask(void *pvParameter)
     while (true)
     {
         if(SharedBusRecieve(&recievedPacket, MATTER_INTERFACE_ID))
-            ESP_LOGE(TAG, "Packet recieved: %s", recievedPacket.data);
+            ESP_LOGE(TAG, "Packet recieved: %s", (char *)recievedPacket.data);
     }
 }
 

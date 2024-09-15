@@ -133,12 +133,12 @@ void ServiceMangerTaskInit()
  * @return void
  */
 void ServiceMangerInit()
-{
+{    nvsFlashInit();
+
     if (SharedBusInit())
         ESP_LOGE(TAG, "Failed to Initialize SharedBus.");
     ESP_LOGI(TAG, "Initialize SharedBus.");
 
-    nvsFlashInit();
 #ifdef CONFIG_DONE_COMPONENT_LVGL
     GUI_TaskCreator();
     ESP_LOGI(TAG, "GUI Created !");
